@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>SecurityModelCube</title>
-		<link rel='stylesheet' type='text/css' href='css/style.css'>
+		<link rel='stylesheet' type='text/css' href='css/style.css?v1.0.0'>
 		<script src="js/three.min.js"></script>
 		<script src="js/TrackballControls.js"></script>
 		<script src="js/DragControls.js"></script>
@@ -16,8 +16,12 @@
 				<div class="btn" onclick="slice(1)">Information States</div>
 				<div class="btn" onclick="slice(1)">Security Measures</div>
 				<div class="titulo">Transforms</div>
-				<div class="btn" onclick="explodeC(1)">Explode</div>
-				<div class="btn" onclick="restoreC(1)">Reassemble</div>
+				<div class="btn" onclick="explodeC()">Explode</div>
+				<div class="btn" onclick="restoreC()">Reassemble</div>
+				<div class="titulo">AutoRotate</div>
+				<div class="opt"><label><input type="checkbox" id="rotateX"><div>X</div></label></div>
+				<div class="opt"><label><input type="checkbox" id="rotateY"><div>Y</div></label></div>
+				<div class="opt"><label><input type="checkbox" id="rotateZ"><div>Z</div></label></div>
 			</div>
 		</div>
 		
@@ -128,11 +132,29 @@
 			
 			function animate() {
 				requestAnimationFrame( animate );
+				if(document.getElementById("rotateX").checked)
+					scene.rotation.x += 0.5*Math.PI/180;
+
+				if(document.getElementById("rotateY").checked)
+					scene.rotation.y += 0.5*Math.PI/180;
+
+				if(document.getElementById("rotateZ").checked)
+					scene.rotation.z += 0.5*Math.PI/180;
+					
 				controls.update();
 				renderer.render( scene, camera );
 			}
 			
+			function explodeC(){
+				for(var i=0;i<objects.length;i++){
+					objects[i].position.set(Math.random() * 500 - 200, Math.random() * 300 - 100, Math.random() * 400 - 120);
+				}			
+			}
+			
 			function restoreC(){
+				document.getElementById("rotateX").checked=false;
+				document.getElementById("rotateY").checked=false;
+				document.getElementById("rotateZ").checked=false;
 				init();
 			}
 		</script>
