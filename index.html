@@ -1,33 +1,45 @@
 <html>
 	<head>
-		<title>RedesCube</title>
-		<style>
-			body { margin: 0; }
-			canvas { width: 100vw; height: 100vh }
-		</style>
-	</head>
-	<body>
+		<title>SecurityModelCube</title>
+		<link rel='stylesheet' type='text/css' href='css/style.css'>
 		<script src="js/three.min.js"></script>
 		<script src="js/TrackballControls.js"></script>
 		<script src="js/DragControls.js"></script>
+	</head>
+	<body>
+		<div class="title">Information Security Model</div>
+		<div class="elements">
+			<div id="canvasElement"></div>
+			<div class="controls">
+				<div class="titulo">Slice by</div>
+				<div class="btn" onclick="slice(1)">Security Properties</div>
+				<div class="btn" onclick="slice(1)">Information States</div>
+				<div class="btn" onclick="slice(1)">Security Measures</div>
+				<div class="titulo">Transforms</div>
+				<div class="btn" onclick="explodeC(1)">Explode</div>
+				<div class="btn" onclick="restoreC(1)">Reassemble</div>
+			</div>
+		</div>
+		
 		<script>
 			var container, stats;
 			var camera, controls, scene, renderer;
 			var objects = [];
 			var cubeSize=50;
+			var cc=document.getElementById("canvasElement");
 			
 			init();
 			animate();
 			
 			function init() {
 				//Creando la camara
-				camera = new THREE.PerspectiveCamera( 70, window.innerWidth / window.innerHeight, 1, 1000 );
+				camera = new THREE.PerspectiveCamera( 70, cc.clientWidth / cc.clientHeight, 1, 1000 );
 				camera.position.set( cubeSize*3, cubeSize*3, cubeSize*3 );
 				
 				//Creando el render
 				renderer = new THREE.WebGLRenderer( { antialias: true } );
-				renderer.setPixelRatio( window.devicePixelRatio );
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setPixelRatio( cc.devicePixelRatio );
+				renderer.setSize( cc.clientWidth, cc.clientHeight );
 				renderer.shadowMap.enabled = true;
 				renderer.shadowMap.type = THREE.PCFShadowMap;
 				
@@ -41,10 +53,8 @@
 				controls.staticMoving = true;
 				controls.dynamicDampingFactor = 0.3;
 				
-				//Cargando las texturas
-				var texture = new THREE.TextureLoader().load('redes/1.png');
+				//Cargando las texturas				
 				var geometry = new THREE.BoxBufferGeometry( cubeSize, cubeSize, cubeSize );
-				var material = new THREE.MeshBasicMaterial( { map: texture } );
 				
 				//Creando la escena
 				scene = new THREE.Scene();
@@ -61,11 +71,24 @@
 				scene.add( light );
 				
 				//Creando el cubo
-				//group = new THREE.Group();
-				//var cubes=[];
-				for(var a=0;a<3;a++){
-					for(var b=0;b<3;b++){
-						for(var c=0;c<3;c++){
+				for(var a=0;a<3;a++){//Z
+					for(var b=0;b<3;b++){//Y
+						for(var c=0;c<3;c++){//X
+
+							//Algoritmos de selección de texturas
+							var adelante=6+(c+1);
+							var arriba=3+(a+1)
+							var lado=3-b;						
+							
+							var material = [
+								new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('redes/'+adelante+'.png') } ),//Frente
+								new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('redes/'+adelante+'.png') } ),//Detras
+								new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('redes/'+arriba+'.png') } ),//Arriba
+								new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('redes/'+arriba+'.png') } ),//Abajo
+								new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('redes/'+lado+'.png') } ),//Izquierda
+								new THREE.MeshBasicMaterial( { map: new THREE.TextureLoader().load('redes/'+lado+'.png') } )//Derecha
+							]
+						
 							var object = new THREE.Mesh( geometry, material );
 							object.position.x = (-1*cubeSize)+a*cubeSize;
 							object.position.y = (-1*cubeSize)+b*cubeSize;
@@ -80,11 +103,11 @@
 					}
 				}
 				
-				//scene.add(group);
-				
 				//Estableciendo el render
-				document.body.appendChild( renderer.domElement );
+				cc.innerHTML ="";
+				cc.appendChild( renderer.domElement );
 				
+				//Configurando los eventos del control drag del mouse
 				var dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
 				dragControls.addEventListener( 'dragstart', function () {
 					controls.enabled = false;
@@ -98,9 +121,9 @@
 			}
 		
 			function onWindowResize() {
-				camera.aspect = window.innerWidth / window.innerHeight;
+				camera.aspect = cc.clientWidth / cc.clientHeight;
 				camera.updateProjectionMatrix();
-				renderer.setSize( window.innerWidth, window.innerHeight );
+				renderer.setSize( cc.clientWidth, cc.clientHeight );
 			}
 			
 			function animate() {
@@ -109,7 +132,9 @@
 				renderer.render( scene, camera );
 			}
 			
-			
+			function restoreC(){
+				init();
+			}
 		</script>
 	</body>
 </html>
