@@ -20,6 +20,8 @@
 	font-size: 20px;
 	cursor: pointer;
 	font-family: sans-serif;
+	width: 170px;
+    text-align: center;
 	transition: all 0.5s;
 }
 .btn:hover {

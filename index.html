@@ -1,7 +1,7 @@
 <html>
 	<head>
 		<title>SecurityModelCube</title>
-		<link rel='stylesheet' type='text/css' href='css/style.css?v1.0.0'>
+		<link rel='stylesheet' type='text/css' href='css/style.css?v1.0.1'>
 		<script src="js/three.min.js"></script>
 		<script src="js/TrackballControls.js"></script>
 		<script src="js/DragControls.js"></script>
@@ -12,9 +12,9 @@
 			<div id="canvasElement"></div>
 			<div class="controls">
 				<div class="titulo">Slice by</div>
-				<div class="btn" onclick="slice(1)">Security Properties</div>
-				<div class="btn" onclick="slice(1)">Information States</div>
-				<div class="btn" onclick="slice(1)">Security Measures</div>
+				<div class="btn" onclick="slice(1)">Critical Information Characteristics</div>
+				<div class="btn" onclick="slice(2)">Information States</div>
+				<div class="btn" onclick="slice(3)">Security Measures</div>
 				<div class="titulo">Transforms</div>
 				<div class="btn" onclick="explodeC()">Explode</div>
 				<div class="btn" onclick="restoreC()">Reassemble</div>
@@ -145,17 +145,134 @@
 				renderer.render( scene, camera );
 			}
 			
+			var newpos=[];
+			var complete=0, topA=50;
+			
 			function explodeC(){
+				complete=0;
 				for(var i=0;i<objects.length;i++){
-					objects[i].position.set(Math.random() * 500 - 200, Math.random() * 300 - 100, Math.random() * 400 - 120);
-				}			
+					newpos[i]=[Math.random() * 500 - 200, Math.random() * 300 - 100, Math.random() * 400 - 120];
+					//console.log(newpos[i]);
+				}		
+				explodeA();
+			}
+			
+			function explodeA(){
+				for(var i=0;i<objects.length;i++)
+					objects[i].position.set((newpos[i][0]/topA)*complete, (newpos[i][1]/topA)*complete, (newpos[i][2]/topA)*complete);
+				complete++;
+				controls.update();
+				renderer.render( scene, camera );
+				if(complete<topA)
+					requestAnimationFrame( explodeA );
 			}
 			
 			function restoreC(){
 				document.getElementById("rotateX").checked=false;
 				document.getElementById("rotateY").checked=false;
 				document.getElementById("rotateZ").checked=false;
+				controls.reset();
+				objects = [];
+				scene.rotation.y = 0*Math.PI/180;
+				scene.rotation.z = 0*Math.PI/180;
+				scene.rotation.x = 0*Math.PI/180;
+				camera.position.set( cubeSize*3, cubeSize*3, cubeSize*3 );
+				camera.updateProjectionMatrix();
+				controls.update();
+				cont=0;
+				complete=0;
 				init();
+			}
+			
+			function restorePosition(){
+				controls.reset();
+				scene.rotation.y = 0*Math.PI/180;
+				scene.rotation.z = 0*Math.PI/180;
+				scene.rotation.x = 0*Math.PI/180;
+				camera.position.set( cubeSize*3, cubeSize*3, cubeSize*3 );
+				camera.updateProjectionMatrix();
+				controls.update();
+				var cube=0;
+				for(var a=0;a<3;a++){//Z
+					for(var b=0;b<3;b++){//Y
+						for(var c=0;c<3;c++){//X
+							objects[cube].position.x = (-1*cubeSize)+a*cubeSize;
+							objects[cube].position.y = (-1*cubeSize)+b*cubeSize;
+							objects[cube].position.z = (-1*cubeSize)+c*cubeSize;
+							cube++;
+						}
+					}
+				}
+				controls.update();
+				renderer.render( scene, camera );
+			}
+			
+			var cont=0, topB=50, typeS=1;
+			function slice(type){
+				restorePosition();
+				cont=0;
+				typeS=type;
+				requestAnimationFrame( moveSlice );
+			}
+			
+			function moveSlice(){
+				switch(typeS){
+					case 1://Critical Information Characteristics
+						for(var c=0;c<3;c++){//Y
+							objects[6+c].position.y ++;
+							objects[15+c].position.y ++;
+							objects[24+c].position.y ++;
+							
+							objects[0+c].position.y --;
+							objects[9+c].position.y --;
+							objects[18+c].position.y --;
+						}
+						scene.rotation.y += 0.85*Math.PI/180;
+						scene.rotation.z += 0.4*Math.PI/180;
+						scene.rotation.x -= 0.6*Math.PI/180;
+						break;
+					case 2://Information States
+						for(var c=0;c<9;c++){//X
+							objects[0+c].position.x --;
+							
+							objects[18+c].position.x ++;
+						}
+						scene.rotation.y += 0.3*Math.PI/180;
+						scene.rotation.z -= 0.9*Math.PI/180;
+						scene.rotation.x += 1.45*Math.PI/180;
+						break;
+					case 3://Security Measures
+						for(var c=0;c<objects.length;c++){//Z
+							if(c%3==0)
+								objects[c].position.z --;
+							else if(c%3==2)
+								objects[c].position.z ++;
+						}
+						scene.rotation.y -= 0.85*Math.PI/180;
+						scene.rotation.z += 0.6*Math.PI/180;
+						scene.rotation.x -= 0.05*Math.PI/180;
+						break;
+				}
+				controls.update();
+				renderer.render( scene, camera );
+				cont++;
+				if(cont<topB)
+					requestAnimationFrame( moveSlice );
+				else{
+					/*switch(typeS){
+						case 1://Critical Information Characteristics
+							scene.rotation.y += 40*Math.PI/180;
+							break;
+						case 2://Information States
+							scene.rotation.x += 1*Math.PI/180;
+							scene.rotation.y += 1*Math.PI/180;
+							break;
+						case 3://Security Measures
+							scene.rotation.z += 1*Math.PI/180;
+							break;
+					}
+					*/
+				}
 			}
 		</script>
 	</body>
