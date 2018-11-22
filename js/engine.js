@@ -1,4 +1,4 @@
-var camera, controls, scene, renderer, raycaster;
+var camera, controls, scene, renderer, raycaster, dragControls;
 var objects=[], newpos=[], db=[];
 var cubeSize=50, complete=0, topA=50, cont=0, topB=50, typeS=1;
 var cc=document.getElementById("canvasElement");
@@ -112,6 +112,14 @@ function setEvents(){
 	controls.addEventListener( 'change', function (){
 		getRotation();
 		getCamera();
+	} );
+	
+	dragControls = new THREE.DragControls( objects, camera, renderer.domElement );
+	dragControls.addEventListener( 'dragstart', function () {
+		controls.enabled = false;
+	} );
+	dragControls.addEventListener( 'dragend', function () {
+		controls.enabled = true;
 	} );
 	
 	//Sobrecargando el evento de tamaño
