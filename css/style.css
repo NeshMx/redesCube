@@ -167,4 +167,5 @@ select#myRange {
     max-height: 100px;
     overflow-y: auto;
     font-family: monospace;
+    text-align: justify;
 }
