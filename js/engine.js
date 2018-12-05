@@ -6,7 +6,6 @@ var mouse = new THREE.Vector2();
 
 init();
 animate();
-setEvents();
 loadDB();
 
 function init() {
@@ -94,6 +93,8 @@ function init() {
 	//Estableciendo el render
 	cc.innerHTML ="";
 	cc.appendChild( renderer.domElement );
+	
+	setEvents();
 }
 
 function setEvents(){
